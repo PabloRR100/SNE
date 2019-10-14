@@ -1,5 +1,4 @@
 
-
 import numpy as np 
 from scipy.stats import multivariate_normal
 
@@ -7,39 +6,142 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-x1 = np.linspace(0,10,100)
-x2 = np.linspace(0,10,100)
-x3 = np.linspace(0,10,100)
+x1 = np.linspace(0,10,10)
+x2 = np.linspace(0,10,10)
+x3 = np.linspace(0,10,10)
+colors = ['red', 'blue', 'green']
+
+'''
+
+Instead of having the samples, we are already given the Gaussian Distributions.
+The domain of each dimension is [0 -> 10]
+
+1D
+==
+mu = 6
+si = 0.3
+
+2D
+==
+mu = [6, 3]
+sigma = [[0.7, 0.2], [0.2, 0.8]] --> [0.7, 0.8]
+
+
+3D
+==
+mu = [6, 3, 8]
+sigma = [[0.7, 0.2, 0.1], [0.2, 0.8, 0.4]] --> [0.1, 0.4, 0.5] --> [0.7, 0.8, 0.5]
+
+'''
 
 
 # 1D GAUSSIAN
 # -----------
+# -----------
 
-# 1 - CONTOURS DOESNT MAKE SENSE IN 1D
+# 1 DIST
+# ------
 
-# 2 - SURFACE PLOT
-mu = 2.5
-si = [0.5]
-z = multivariate_normal.pdf(x1, mean=2.5, cov=si)
+# 0 - Calculate the Gaussian
+mu = 6
+si = [0.03]
+z = multivariate_normal(mean=mu, cov=si)
+
+# 1 - SURFACE
 plt.figure(figsize=(10,10))
-plt.plot(x1, z)
+plt.plot(x1, z.pdf(x1))
 plt.show()
+
+# 2 - CONTOURS DOESNT MAKE SENSE IN 1D !!
+
+
+# 2 DISTS
+# -------
+
+n = 2
+mus = [6, 3]
+sis = [[0.03], [0.6]]
+zs = [multivariate_normal(mu, si) for mu,si in zip(mus, sis)]
+
+plt.figure(figsize=(10,10))
+for z,col in zip(zs, colors):
+    plt.plot(x1, z.pdf(x1), c=col)
+plt.show()
+
+
+
+
+
 
 # BIVARIATE GAUSSIAN
 # ------------------
+# ------------------
 
-# 1 - CONTOURS
+xx1, xx2 = np.meshgrid(x1,x2)
+grid = np.array([xx1.flatten(), xx2.flatten()]).T 
+
+# 1 DIST
+# ------
+
+# 0 - Calcualte the Gaussian
+
+mu = np.array([6, 3])
+sigma = [[2, 0.5], [0.5, 1.8]]
+si = np.diag(sigma)
+z = multivariate_normal(mean=mu, cov=sigma) 
+
+
+# 1 - SURFACE
+
+fig = plt.figure(figsize=(10,10))
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(xx1, xx2, z.pdf(grid).reshape(xx1.shape), 
+    cmap=cm.coolwarm,linewidth=0, antialiased=True)
+plt.show()
+
+# 2 - CONTOURS
+plt.figure(figsize=(10,10))
+plt.contourf(z.pdf(grid).reshape(xx1.shape))
+plt.show()
+
+
+
+# 2 DISTS
+# -------
+
+n = 2
+mu1 = np.array([6, 3])
+mu2 = np.array([3, 7])
+mus = [mu1,mu2]
+
+sigma1 = [[0.03], [0.6]]
+sigma2 = [[0.13], [0.4]]
+sigmas = [sigma1,sigma2]
+sis = [np.diag(sigma) for sigma in sigmas]
+zs = [multivariate_normal(mu, si) for mu,si in zip(mus, sis)]
+
+z = zs[0]
+
+# 1 - SURFACE
+
+fig = plt.figure(figsize=(10,10))
+ax = fig.add_subplot(111, projection='3d')
+for z in zs:
+    ax.plot_surface(xx1, xx2, z.pdf(grid).reshape(xx1.shape), 
+        cmap=cm.coolwarm,linewidth=0, antialiased=True)
+plt.show()
+
+
+
+
+
+
+# 3D MULTIVARIATE GAUSSIAN
+# -------------------------
+
+
 
 xx1, xx2 = np.meshgrid(x1, x2)
-
-
-
-from scipy.stats import multivariate_normal
-x = np.linspace(0, 5, 10, endpoint=False)
-y = multivariate_normal.pdf(x, mean=2.5, cov=0.5); y
-plt.plot(x, y)
-
-
 
 def np_bivariate_normal_pdf(domain, mean, variance):
   X = np.arange(-domain+mean, domain+mean, variance)
@@ -61,6 +163,7 @@ def plt_plot_bivariate_normal_pdf(x, y, z, name=""):
   ax.set_zlabel('z');
   plt.show()
 
+x_,y_,z_ = np_bivariate_normal_pdf(6,4,2.5)
 
 # def bivariate_pdf(mean, variance):
 
