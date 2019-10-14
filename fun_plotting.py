@@ -90,6 +90,7 @@ sigma = [[2, 0.5], [0.5, 1.8]]
 si = np.diag(sigma)
 z = multivariate_normal(mean=mu, cov=sigma) 
 
+z_ = z.pdf(grid)
 
 # 1 - SURFACE
 
@@ -101,6 +102,7 @@ plt.show()
 
 # 2 - CONTOURS
 plt.figure(figsize=(10,10))
+plt.contour(z.pdf(grid).reshape(xx1.shape))
 plt.contourf(z.pdf(grid).reshape(xx1.shape))
 plt.show()
 
@@ -114,13 +116,11 @@ mu1 = np.array([6, 3])
 mu2 = np.array([3, 7])
 mus = [mu1,mu2]
 
-sigma1 = [[0.03], [0.6]]
-sigma2 = [[0.13], [0.4]]
+sigma1 = [[2,0.5], [0.5,1.8]]
+sigma2 = [[1,0.13], [0.4,3]]
 sigmas = [sigma1,sigma2]
 sis = [np.diag(sigma) for sigma in sigmas]
 zs = [multivariate_normal(mu, si) for mu,si in zip(mus, sis)]
-
-z = zs[0]
 
 # 1 - SURFACE
 
@@ -131,8 +131,11 @@ for z in zs:
         cmap=cm.coolwarm,linewidth=0, antialiased=True)
 plt.show()
 
-
-
+# 2 - CONTOURS
+plt.figure(figsize=(10,10))
+for z,c in zip(zs,colors):
+    plt.contour(z.pdf(grid).reshape(xx1.shape), colors=c)
+plt.show()
 
 
 
@@ -141,72 +144,3 @@ plt.show()
 
 
 
-xx1, xx2 = np.meshgrid(x1, x2)
-
-def np_bivariate_normal_pdf(domain, mean, variance):
-  X = np.arange(-domain+mean, domain+mean, variance)
-  Y = np.arange(-domain+mean, domain+mean, variance)
-  X, Y = np.meshgrid(X, Y)
-  R = np.sqrt(X**2 + Y**2)
-  Z = ((1. / np.sqrt(2 * np.pi)) * np.exp(-.5*R**2))
-  return X+mean, Y+mean, Z
-
-def plt_plot_bivariate_normal_pdf(x, y, z, name=""):
-  fig = plt.figure(figsize=(12, 6))
-  ax = fig.gca(projection='3d')
-  ax.plot_surface(x, y, z, 
-                  cmap=cm.coolwarm,
-                  linewidth=0, 
-                  antialiased=True)
-  ax.set_xlabel('x')
-  ax.set_ylabel('y')
-  ax.set_zlabel('z');
-  plt.show()
-
-x_,y_,z_ = np_bivariate_normal_pdf(6,4,2.5)
-
-# def bivariate_pdf(mean, variance):
-
-mu = np.array([6,4])
-si = np.array([[1, 3], [3,4]])
-
-x1 = np.linspace(0,10,10)
-x2 = np.linspace(0,10,10)
-
-
-xx1, xx2 = np.meshgrid(x1, x2)
-z = multivariate_normal.pdf(np.meshgrid(x1, x2), mu, np.diag(si))
-
-plt.figure(figsize=(20,20))
-plt.contour(x)
-plt.show()
-
-plt.figure(figsize=(20,20))
-plt.contourf(z)
-plt.show()
-
-
-
-
-def np_bivariate_normal_pdf(domain, mean, variance):
-  X = np.arange(-domain+mean, domain+mean, variance)
-  Y = np.arange(-domain+mean, domain+mean, variance)
-  X, Y = np.meshgrid(X, Y)
-  R = np.sqrt(X**2 + Y**2)
-  Z = ((1. / np.sqrt(2 * np.pi)) * np.exp(-.5*R**2))
-  return X+mean, Y+mean, Z
-
-
-def plt_plot_bivariate_normal_pdf(x, y, z, name=""):
-  fig = plt.figure(figsize=(12, 6))
-  ax = fig.gca(projection='3d')
-  ax.plot_surface(x, y, z, 
-                  cmap=cm.coolwarm,
-                  linewidth=0, 
-                  antialiased=True)
-  ax.set_xlabel('x')
-  ax.set_ylabel('y')
-  ax.set_zlabel('z');
-  plt.show()
-
-plt_plot_bivariate_normal_pdf(*np_bivariate_normal_pdf(6, 4, .25))
