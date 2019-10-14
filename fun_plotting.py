@@ -47,7 +47,7 @@ mu = 6
 si = [0.03]
 z = multivariate_normal(mean=mu, cov=si)
 
-# 1 - SURFACE
+# 1 - SURFACE 
 plt.figure(figsize=(10,10))
 plt.plot(x1, z.pdf(x1))
 plt.show()
@@ -121,6 +121,7 @@ sigma2 = [[1,0.13], [0.4,3]]
 sigmas = [sigma1,sigma2]
 sis = [np.diag(sigma) for sigma in sigmas]
 zs = [multivariate_normal(mu, si) for mu,si in zip(mus, sis)]
+z1_ = z.pdf(grid).reshape(xx1.shape)
 
 # 1 - SURFACE
 
@@ -141,6 +142,34 @@ plt.show()
 
 # 3D MULTIVARIATE GAUSSIAN
 # -------------------------
+
+xx11, xx22, xx33 = np.meshgrid(x1,x2,x3)
+grid = np.array([xx11.flatten(), xx22.flatten(), xx33.flatten()]).T 
+
+# 1 DIST
+# ------
+
+# 0 - Calcualte the Gaussian
+
+mu = np.array([6, 3, 8])
+sigma = [[2, 0.5, 0.2], [0.5, 1.8,-0.9], [0.2, -0.9, 3]]
+si = np.diag(sigma)
+z = multivariate_normal(mean=mu, cov=sigma) 
+
+# 1 - SURFACE --> DOESN'T MAKE SENSE - IT GOES TO 4D
+
+# 2 - CONTOURS
+
+z_ = z.pdf(grid).reshape(xx11.shape)
+z2_ = z_[0]
+
+# We have to divide the dimensions ???
+fig = plt.figure(figsize=(10,10))
+ax = fig.add_subplot(111, projection='3d')
+ax.contour3D(xx11,xx22,, 50, cmap='binary')
+ax.plot_wireframe(*z_, color='black')
+plt.show()
+
 
 
 
